@@ -1,238 +1,118 @@
-1\. VPC (Virtual Private Cloud)
-
-
+1. VPC (Virtual Private Cloud)
 
 What is it?
-
 A VPC is your own private network inside AWS.
-
 You control:
-
 IP addresses
-
 Subnets
-
 Routing
-
 Security
 
+2. Private subnet -
+	BY Default if we don't specify anything. everything is private subnet
+	Private Subnet
+	No direct internet access.
+	More secure.
+	Used for sensitive resources.
 
+   Public subnet - 
+	Has internet access.
+	Used for resources users need to reach.
+	To connect to internet need IGW
 
-2\. Private subnet -
+   Internet Gateway (IGW)
+	
+	Allows the VPC to connect to the internet.
 
-&#x09;BY Default if we don't specify anything. everything is private subnet
-
-&#x09;Private Subnet
-
-&#x09;No direct internet access.
-
-&#x09;More secure.
-
-&#x09;Used for sensitive resources.
-
-
-
-&#x20;  Public subnet - 
-
-&#x09;Has internet access.
-
-&#x09;Used for resources users need to reach.
-
-&#x09;To connect to internet need IGW
-
-
-
-&#x20;  Internet Gateway (IGW)
-
-&#x09;
-
-&#x09;Allows the VPC to connect to the internet.
-
-
-
-&#x09;Without IGW:
-
-&#x09;No internet
-
-&#x09;No website access
-
-
+	Without IGW:
+	No internet
+	No website access
 
 3.Public Route Table
+	What is it?
+	Tells traffic where to go.
+	Remember
 
-&#x09;What is it?
-
-&#x09;Tells traffic where to go.
-
-&#x09;Remember
-
-
-
-&#x09;Route Table = Google Maps for network traffic.
-
+	Route Table = Google Maps for network traffic.
 4.Security Group
+	What is it?
 
-&#x09;What is it?
+	Firewall for EC2.
 
+	Controls:
 
-
-&#x09;Firewall for EC2.
-
-
-
-&#x09;Controls:
-
-
-
-&#x09;Incoming traffic (Inbound)
-
-&#x09;Outgoing traffic (Outbound)
-
-
+	Incoming traffic (Inbound)
+	Outgoing traffic (Outbound)
 
 5.Bastion Host
+	What is it?
+	A public EC2 used to access private EC2 servers.
 
-&#x09;What is it?
-
-&#x09;A public EC2 used to access private EC2 servers.
-
-
-
-6\.
-
-&#x09;Private Route Table: Controls traffic for resources in a private subnet.
-
-&#x09;**It does not have a direct route to the Internet Gateway (IGW), so the subnet isn't directly reachable from the internet.**
-
-&#x09;If internet access is needed (for updates or downloads), it sends traffic to a NAT Gateway instead.
-
-&#x09;													
-
-
+6.
+	Private Route Table: Controls traffic for resources in a private subnet.
+	It does not have a direct route to the Internet Gateway (IGW), so the subnet isn't directly reachable from the internet.
+	If internet access is needed (for updates or downloads), it sends traffic to a NAT Gateway instead.
+														
 
 =============================================================================
 
-
-
 SG - works on Instance level
-
 NACL (Network Access Control List)- Works on Subnet level
 
-
-
 Real-world use
-
-&#x09;Security Group: Allow HTTP (80) and HTTPS (443) to your web server.
-
-&#x09;NACL: Block traffic from a suspicious IP range for the entire subnet.
-
-
-
+	Security Group: Allow HTTP (80) and HTTPS (443) to your web server.
+	NACL: Block traffic from a suspicious IP range for the entire subnet.
 
 
 | Security Group     | NACL                    |
-
 | ------------------ | ----------------------- |
-
 | Works on EC2       | Works on Subnet         |
-
 | Stateful           | Stateless               |
-
-| Allows only        | Allows \& Denies         |
-
+| Allows only        | Allows & Denies         |
 | More commonly used | Extra layer of security |
-
-
-
 
 
 1.VPC Endpoints
 
+	What is it?
+	Allows private resources to access AWS services without using the internet.
+	Examples:
+	S3
+	DynamoDB
 
-
-&#x09;What is it?
-
-&#x09;Allows private resources to access AWS services without using the internet.
-
-&#x09;Examples:
-
-&#x09;S3
-
-&#x09;DynamoDB
-
-
-
-&#x09;Real-world use:
-
-&#x09;A private EC2 uploads files to an S3 bucket without using an Internet Gateway or NAT Gateway.
-
-
-
+	Real-world use:
+	A private EC2 uploads files to an S3 bucket without using an Internet Gateway or NAT Gateway.
 
 
 2.Managed Prefix Lists
 
-
-
-&#x09;What is it?
-
-&#x09;A reusable list of IP addresses or CIDR blocks.
-
-&#x09;Instead of adding the same IPs in many Security Groups or Route Tables, create one Prefix List and reuse it.
-
-&#x09;Remember
-
-&#x09;Managed Prefix List = One IP list, use everywhere.
-
-
+	What is it?
+	A reusable list of IP addresses or CIDR blocks.
+	Instead of adding the same IPs in many Security Groups or Route Tables, create one Prefix List and reuse it.
+	Remember
+	Managed Prefix List = One IP list, use everywhere.
 
 3.VPC Peering
+	What is it?
+	Connects two VPCs so they can communicate privately.
+	Requirements:
+	Add routes in both VPCs.
+	Communication is private over the AWS network.
+	Remember
+	VPC Peering = Private bridge between two VPCs.
 
-&#x09;What is it?
+	Note: even if two vpcs are different in aws account VPC PEERING WORKS
 
-&#x09;Connects two VPCs so they can communicate privately.
+4.5. Transit Gateway (TGW)
+	What is it?
 
-&#x09;Requirements:
+	A central hub that connects many VPCs and even on-premises networks.
 
-&#x09;Add routes in both VPCs.
+	Without TGW:
 
-&#x09;Communication is private over the AWS network.
+	Every VPC needs separate peering connections. AND DIFFICULT TO MANAGE
 
-&#x09;Remember
+	With TGW:
 
-&#x09;VPC Peering = Private bridge between two VPCs.
-
-
-
-&#x09;**Note: even if two vpcs are different in aws account VPC PEERING WORKS**
-
-
-
-**4.5. Transit Gateway (TGW)**
-
-&#x09;**What is it?**
-
-
-
-&#x09;**A central hub that connects many VPCs and even on-premises networks.**
-
-
-
-&#x09;**Without TGW:**
-
-
-
-&#x09;**Every VPC needs separate peering connections. AND DIFFICULT TO MANAGE**
-
-
-
-&#x09;**With TGW:**
-
-
-
-&#x09;**All VPCs connect to one central gateway.**
-
-
-
-
+	All VPCs connect to one central gateway.
 
