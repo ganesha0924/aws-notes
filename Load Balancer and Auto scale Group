@@ -1,0 +1,355 @@
+# AWS Load Balancers & Auto Scaling Groups — Revision + Interview Notes
+
+## 1. Load Balancer (ELB) Basics
+
+1. **Elastic Load Balancer (ELB)** distributes incoming traffic across multiple targets.
+2. It improves **availability, scalability, and fault tolerance**.
+3. Load Balancer works as a single entry point for users.
+4. It automatically routes requests only to healthy targets.
+5. ELB supports EC2 instances, IP addresses, containers, and Lambda.
+
+---
+
+# Types of AWS Load Balancers
+
+## 2. Application Load Balancer (ALB)
+
+* Works at **Layer 7 (Application Layer)**.
+* Supports **HTTP and HTTPS** traffic.
+* Best for web applications and APIs.
+* Supports:
+
+  * Path-based routing
+  * Host-based routing
+  * SSL/TLS termination
+  * WebSockets
+
+**Example:**
+
+```
+example.com/users  → User Service
+example.com/orders → Order Service
+```
+
+**Interview Question:**
+**Q: Why use ALB?**
+A: ALB is used for HTTP/HTTPS applications that require intelligent routing based on URL paths or hostnames.
+
+---
+
+## 3. Network Load Balancer (NLB)
+
+* Works at **Layer 4 (Transport Layer)**.
+* Supports TCP, UDP, and TLS.
+* Provides:
+
+  * Very high performance
+  * Low latency
+  * Static IP support
+
+**Used for:**
+
+* Gaming applications
+* Financial systems
+* Real-time applications
+
+**Interview Question:**
+**Q: ALB vs NLB?**
+
+| ALB                   | NLB              |
+| --------------------- | ---------------- |
+| Layer 7               | Layer 4          |
+| HTTP/HTTPS            | TCP/UDP          |
+| Content-based routing | High performance |
+| Web apps              | Low latency apps |
+
+---
+
+# Load Balancer Components
+
+## 4. Listener
+
+* Checks incoming requests on a specific port.
+* Example:
+
+```
+Port 80  → HTTP
+Port 443 → HTTPS
+```
+
+## 5. Target Group
+
+* Collection of servers receiving traffic.
+* Targets can be:
+
+  * EC2 instances
+  * IP addresses
+  * Lambda functions
+
+## 6. Health Check
+
+* Load Balancer continuously checks target health.
+* Failed instances are removed from traffic.
+
+---
+
+# Auto Scaling Group (ASG)
+
+## 7. What is Auto Scaling?
+
+* Automatically adds or removes EC2 instances based on demand.
+* Maintains application performance.
+* Reduces unnecessary costs.
+
+Example:
+
+Low traffic:
+
+```
+ALB
+ |
+EC2 EC2
+```
+
+High traffic:
+
+```
+ALB
+ |
+EC2 EC2 EC2 EC2
+```
+
+---
+
+# ASG Components
+
+## 8. Launch Template
+
+Defines EC2 configuration:
+
+* AMI
+* Instance type
+* Security group
+* Key pair
+* User data
+* Storage
+
+**Interview Question:**
+**Q: Why use Launch Template?**
+A: It provides a standard configuration for creating new EC2 instances automatically.
+
+---
+
+## 9. Minimum Size
+
+* Minimum number of instances ASG must maintain.
+
+Example:
+
+```
+Minimum = 2
+```
+
+---
+
+## 10. Maximum Size
+
+* Maximum number of instances ASG can create.
+
+Example:
+
+```
+Maximum = 10
+```
+
+---
+
+## 11. Desired Capacity
+
+* Number of instances ASG tries to maintain.
+
+Example:
+
+```
+Desired = 3
+```
+
+---
+
+# Scaling Policies
+
+## 12. Target Tracking Scaling
+
+* Maintains a target metric.
+
+Example:
+
+```
+CPU Target = 50%
+
+CPU increases → Add instances
+CPU decreases → Remove instances
+```
+
+---
+
+## 13. Step Scaling
+
+* Uses CloudWatch alarms.
+
+Example:
+
+```
+CPU > 70% → Add 2 instances
+CPU > 90% → Add 5 instances
+```
+
+---
+
+## 14. Scheduled Scaling
+
+* Scaling happens at a fixed time.
+
+Example:
+
+```
+Business hours:
+Increase servers at 9 AM
+```
+
+---
+
+# ALB + ASG Architecture
+
+```
+                Users
+                  |
+                  |
+                 ALB
+                  |
+            Target Group
+                  |
+        -------------------
+        |        |        |
+       EC2      EC2      EC2
+        \        |        /
+             Auto Scaling
+                  |
+             CloudWatch
+```
+
+---
+
+# High Availability Concepts
+
+## 15. Multi-AZ Deployment
+
+* Deploy instances in multiple Availability Zones.
+* Protects against AZ failure.
+
+Example:
+
+```
+AZ-1          AZ-2
+
+EC2           EC2
+EC2           EC2
+```
+
+---
+
+# Security Best Practices
+
+## 16. Security Groups
+
+ALB Security Group:
+
+```
+Allow:
+80 HTTP
+443 HTTPS
+```
+
+EC2 Security Group:
+
+```
+Allow:
+Traffic only from ALB Security Group
+```
+
+Never expose EC2 directly.
+
+---
+
+# Monitoring
+
+## 17. CloudWatch Metrics
+
+Load Balancer:
+
+* Request count
+* Latency
+* HTTP errors
+* Target health
+
+Auto Scaling:
+
+* CPU utilization
+* Instance count
+* Scaling events
+
+---
+
+# Important Interview Questions
+
+### 1. What is the difference between ALB and NLB?
+
+**Answer:**
+ALB works at Layer 7 for HTTP/HTTPS routing, while NLB works at Layer 4 for high-performance TCP/UDP traffic.
+
+---
+
+### 2. What happens if an EC2 instance fails behind a Load Balancer?
+
+**Answer:**
+
+1. Health check detects failure.
+2. Load Balancer stops sending traffic.
+3. ASG launches a replacement instance.
+
+---
+
+### 3. Can ASG work without Load Balancer?
+
+**Answer:**
+Yes. ASG can manage EC2 instances independently, but Load Balancer is used to distribute user traffic.
+
+---
+
+### 4. Why deploy ASG across multiple Availability Zones?
+
+**Answer:**
+To achieve high availability and continue service during an AZ failure.
+
+---
+
+### 5. What is the role of CloudWatch in Auto Scaling?
+
+**Answer:**
+CloudWatch monitors metrics and triggers scaling actions based on alarms.
+
+---
+
+### 6. Difference between Vertical and Horizontal Scaling?
+
+**Vertical Scaling:**
+
+* Increase server size.
+* Example: t3.small → t3.large.
+
+**Horizontal Scaling:**
+
+* Add more servers.
+* Example: 2 EC2 → 10 EC2.
+
+AWS Auto Scaling uses **horizontal scaling**.
