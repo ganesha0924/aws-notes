@@ -1,0 +1,144 @@
+What is Disaster Recovery (DR)?
+      Disaster Recovery (DR) means bringing your application back after something goes wrong.
+
+RTO = How long your application can be down
+        ex-Example:
+
+                    Your website stops working at 2:00 PM.
+                    
+                    You want it back by 2:15 PM.
+                    
+                    So,
+                    
+                    RTO = 15 minutes
+                    
+                    Smaller RTO means:
+                    
+                    Faster recovery
+                    More cost
+RPO = How much data you can afford to lose.
+      Example:
+
+                    Your database saves a copy every 10 minutes.
+                    
+                    The last backup was at 1:50 PM.
+                    
+                    The server crashes at 2:00 PM.
+                    
+                    You lose 10 minutes of data.
+                    
+                    So,
+                    
+                    RPO = 10 minutes
+                    
+                    Smaller RPO means:
+                    
+                    Less data loss
+                    More frequent backups
+                    Higher cost
+
+
+========================
+
+Four Disaster Recovery Strategies
+
+                    1. Backup and Restore (Cheapest)
+                            Pros
+                            Lowest cost
+                            Easy to set up
+                            Cons
+                            Takes a long time to recover
+                            Users wait longer
+                            
+                            Best for:
+                            
+                            Small websites
+                            Internal tools
+                            Applications that can be down for a few hours
+
+
+                     2. Pilot Light
+
+                              Think of a gas stove.
+                              
+                              The small flame (pilot light) is always on.
+                              
+                              In AWS, only the most important parts stay running.
+                              
+                              For example:
+                              
+                              Running:
+                              
+                              Database
+                              Storage
+                              Network
+                              
+                              Not running:
+                              
+                              Application servers
+                              Extra EC2 instances
+                              
+                              If disaster happens:
+                           ==============   
+                              Start EC2 servers
+                              
+                              ↓
+                              
+                              Deploy application
+                              
+                              ↓
+                              
+                              Connect to database
+                              
+                              ↓
+                              
+                              Application is ready
+                            ==================
+                              Pros
+                              Faster than Backup & Restore
+                              Lower cost than Warm Standby
+                              Cons
+                              Still takes a few minutes to start everything
+
+                            3. Warm Standby
+
+                              A small version of your application is always running.
+                              
+                              Example:
+                              
+                              Production:
+                              
+                              10 EC2 servers
+                              
+                              Backup:
+                              ==================
+                              1 EC2 server
+                              
+                              If disaster happens:
+                              
+                              1 EC2
+                              
+                              ↓
+                              
+                              Auto Scaling
+                              
+                              ↓
+                              
+                              10 EC2
+                              
+                              Because the application is already running, AWS only needs to add more servers.
+                              ===================
+                              Pros
+                              Fast recovery
+                              Easy to test
+                              Cons
+                              Costs more because backup servers are always running
+
+                            4. Multi-site Active/Active
+
+                              This is the best but most expensive option.
+                              
+                              Two AWS Regions run the application at the same time.
+                              
+                              Example:
+                              if one refion gets disaster still another serves- banks, e-commerce, healthcare , important bussiness applications
